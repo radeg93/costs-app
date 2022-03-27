@@ -1,0 +1,39 @@
+.comment-form {
+  display: flex;
+  margin-top: 8px;
+}
+
+.comment {
+  flex: 1;
+  margin: 0 16px;
+}
+
+.add-btn {
+  background: #488eac;
+  color: white;
+  line-height: 32px;
+  font-size: 14px;
+}
+
+/deep/ .mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: white;
+  padding: 0;
+}
+
+/deep/ .mat-form-field-underline {
+  display: none;
+}
+
+/deep/ .mat-form-field-wrapper {
+  padding: 0;
+  border: 1px solid #dbdada;
+}
+
+/deep/ .mat-form-field-infix {
+  padding: 8px !important;
+  border: 0;
+}
+
+/deep/ .mat-form-field-appearance-fill .mat-select-arrow-wrapper {
+  transform: none;
+}

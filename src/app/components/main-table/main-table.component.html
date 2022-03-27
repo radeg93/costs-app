@@ -1,0 +1,90 @@
+<ng-container *ngIf="{
+                       baseExchangeRate: baseExchangeRate$ | async,
+                       daExchangeRate: daExchangeRate$ | async,
+                       daCurrency: daCurrency$ | async,
+                       baseCurrency: baseCurrency$ | async
+                     } as state">
+  <div class="main-table">
+    <div class="main-table__header">
+      <span class="main-table__header-cell">{{ costName }}</span>
+      <span class="main-table__header-cell">Account Code</span>
+      <span class="main-table__header-cell align-right">Quoted</span>
+      <span class="main-table__header-cell align-right">Screened</span>
+      <span class="main-table__header-cell"></span>
+    </div>
+    <ng-container *ngFor="let item of costItems">
+      <div class="main-table__body">
+        <span class="main-table__body-cell">{{item.name}}</span>
+        <span class="main-table__body-cell">{{item.costItemAlias.accountingCode}}</span>
+        <span class="main-table__body-cell align-right">
+          <div class="main-table__body-cell-amount">
+            <span class="da-currency">{{state.daCurrency}}</span>
+            <span class="da-amount">{{calculateAmount(item.costs[0], state.daExchangeRate) | number : '1.2-2'}}</span>
+          </div>
+
+          <div class="main-table__body-cell-amount">
+            <span class="base-currency">{{state.baseCurrency}}</span>
+            <span
+              class="base-amount">{{calculateAmount(item.costs[0], state.baseExchangeRate) | number : '1.2-2'}}</span>
+          </div>
+        </span>
+        <span class="main-table__body-cell align-right">
+         <div class="main-table__body-cell-amount">
+            <span class="da-currency">{{state.daCurrency}}</span>
+            <span class="da-amount">{{calculateAmount(item.costs[1], state.daExchangeRate) | number : '1.2-2'}}</span>
+          </div>
+
+          <div class="main-table__body-cell-amount">
+            <span class="base-currency">{{state.baseCurrency}}</span>
+            <span
+              class="base-amount">{{calculateAmount(item.costs[1], state.baseExchangeRate) | number : '1.2-2'}}</span>
+          </div>
+        </span>
+        <span class="main-table__body-cell align-center" fxFlex fxLayout="row" fxLayoutAlign="center"
+              (click)="toggleComments(item)">
+          <mat-icon>mode_comment</mat-icon>
+          <p>{{item.comments?.length || 0 }}</p>
+        </span>
+      </div>
+      <div class="main-table__comments" *ngIf="item.comments?.length && !item.hideComments">
+        <app-comments [comments]="item.comments"
+                      [costItemId]="item.id"></app-comments>
+        <app-add-comment [costItemId]="item.id"
+                         [actionType]="CommentActionType.Add"
+                         (addComment)="onAddComment($event)"></app-add-comment>
+      </div>
+      <div class="main-table__comments" *ngIf="!item.comments?.length && !item.hideComments">
+        <app-add-comment [costItemId]="item.id"
+                         [actionType]="CommentActionType.Add"
+                         (addComment)="onAddComment($event)"></app-add-comment>
+      </div>
+    </ng-container>
+    <div class="main-table__body">
+      <span class="main-table__body-cell">Total</span>
+      <span class="main-table__body-cell"></span>
+      <span class="main-table__body-cell align-right">
+        <div class="main-table__body-cell-amount">
+          <span class="da-currency">{{state.daCurrency}}</span>
+          <span class="da-amount">{{calculateTotal(costItems, CostType.Quoted, state.daExchangeRate) | number : '1.2-2' }}</span>
+        </div>
+
+        <div class="main-table__body-cell-amount">
+          <span class="base-currency">{{state.baseCurrency}}</span>
+          <span class="base-amount">{{calculateTotal(costItems, CostType.Quoted, state.baseExchangeRate) | number : '1.2-2' }}</span>
+        </div>
+      </span>
+      <span class="main-table__body-cell align-right">
+        <div class="main-table__body-cell-amount">
+          <span class="da-currency">{{state.daCurrency}}</span>
+          <span class="da-amount">{{calculateTotal(costItems, CostType.Screened, state.daExchangeRate) | number : '1.2-2' }}</span>
+        </div>
+
+        <div class="main-table__body-cell-amount">
+          <span class="base-currency">{{state.baseCurrency}}</span>
+          <span class="base-amount">{{calculateTotal(costItems, CostType.Screened, state.baseExchangeRate) | number : '1.2-2' }}</span>
+        </div>
+      </span>
+      <span class="main-table__body-cell"></span>
+    </div>
+  </div>
+</ng-container>

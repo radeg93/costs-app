@@ -1,0 +1,22 @@
+<ng-container *ngIf="{
+  baseCurrency: baseCurrency$ | async,
+  daCurrency: daCurrency$ | async,
+  baseToDaExchangeRate: baseToDaExchangeRate$ | async
+} as state">
+  <div class="costs-header">
+    <p class="title">COSTS</p>
+    <p class="currency">Currency</p>
+    <mat-form-field appearance="fill">
+      <mat-select placeholder="Select Currency" [formControl]="currencyControl" (selectionChange)="changeCurrency($event)">
+        <mat-option *ngFor="let currency of allCurrencies$ | async" [value]="currency.toCurrency">
+          {{currency.toCurrency}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <p class="currency">1 {{ state.baseCurrency }} = {{ state.baseToDaExchangeRate | number: '1.2-4' }} {{ state.daCurrency }} </p>
+  </div>
+</ng-container>
+
+<ng-container *ngFor="let cost of costs$ | async">
+  <app-main-table [costName]="cost.name" [costItems]="cost.costItems"></app-main-table>
+</ng-container>

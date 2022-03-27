@@ -1,0 +1,67 @@
+.comment {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 8px 0;
+  border-bottom: 1px solid #dbdada;
+}
+
+comment:first-child {
+  padding-top: 0;
+}
+
+comment:last-child {
+  border-bottom: none;
+}
+
+.comment-type {
+  flex: 1;
+}
+
+.comment-text {
+  flex: 6;
+  color: #435760;
+  font-weight: 500;
+}
+
+.comment-author {
+  flex: 1;
+  color: #435760;
+  font-weight: 500;
+}
+
+.comment-date {
+  flex: 1;
+  color: #97a2a8;
+}
+
+.comment-actions > mat-icon {
+  margin-right: 4px;
+  font-size: 20px;
+}
+
+.internal {
+  border-radius: 16px;
+  border: 1px solid #42565f;
+  background: white;
+  color: #42565f;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.external {
+  border-radius: 16px;
+  border: 1px solid #42565f;
+  background: #42565f;
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+mat-icon {
+  cursor: pointer;
+}
+
+app-add-comment {
+  flex: 1;
+}

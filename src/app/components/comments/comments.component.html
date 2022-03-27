@@ -1,0 +1,20 @@
+<div *ngFor="let comment of comments" class="comment">
+  <ng-container *ngIf="!isEditableComment(comment.id); else form">
+    <div class="comment-type">
+      <span [ngClass]="comment.type === CommentType.Internal ? 'internal' : 'external'">{{comment.type}}</span>
+    </div>
+    <div class="comment-text">{{comment.comment}}</div>
+    <div class="comment-author">{{comment.author}}</div>
+    <div class="comment-date">{{comment.date | date:'d MMM yyyy hh:mm'}}</div>
+    <div class="comment-actions">
+      <mat-icon aria-label="edit" (click)="makeEditable(comment.id)">edit</mat-icon>
+      <mat-icon aria-label="delete" (click)="removeComment(comment.id)">delete</mat-icon>
+    </div>
+  </ng-container>
+  <ng-template #form>
+    <app-add-comment [comment]="comment"
+                     [actionType]="CommentActionType.Edit"
+                     (addComment)="onEditComment($event)"></app-add-comment>
+  </ng-template>
+</div>
+

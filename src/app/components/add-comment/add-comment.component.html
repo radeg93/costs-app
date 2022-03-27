@@ -1,0 +1,13 @@
+<form class="comment-form" [formGroup]="form" >
+  <mat-form-field appearance="fill">
+    <mat-select placeholder="Select type" formControlName="type">
+      <mat-option *ngFor="let type of commentTypes" [value]="type">
+        {{type}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="comment" appearance="fill">
+    <input placeholder="Type comment" matInput value="" formControlName="text">
+  </mat-form-field>
+  <button class="add-btn" mat-raised-button (click)="saveComment($event)" [disabled]="form.invalid">{{ actionType === CommentActionType.Add ? 'Add' : 'Edit' }}</button>
+</form>
