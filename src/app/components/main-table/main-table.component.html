@@ -19,25 +19,27 @@
         <span class="main-table__body-cell align-right">
           <div class="main-table__body-cell-amount">
             <span class="da-currency">{{state.daCurrency}}</span>
-            <span class="da-amount">{{calculateAmount(item.costs[0], state.daExchangeRate) | number : '1.2-2'}}</span>
+            <span
+              class="da-amount">{{item.costs[0] | amount : (this.state.daExchangeRate ?? 1) | number : '1.2-2'}}</span>
           </div>
 
           <div class="main-table__body-cell-amount">
             <span class="base-currency">{{state.baseCurrency}}</span>
             <span
-              class="base-amount">{{calculateAmount(item.costs[0], state.baseExchangeRate) | number : '1.2-2'}}</span>
+              class="base-amount">{{item.costs[0] | amount : (this.state.baseExchangeRate ?? 1) | number : '1.2-2'}}</span>
           </div>
         </span>
         <span class="main-table__body-cell align-right">
          <div class="main-table__body-cell-amount">
             <span class="da-currency">{{state.daCurrency}}</span>
-            <span class="da-amount">{{calculateAmount(item.costs[1], state.daExchangeRate) | number : '1.2-2'}}</span>
+            <span
+              class="da-amount">{{item.costs[1] | amount : (this.state.daExchangeRate ?? 1) | number : '1.2-2'}}</span>
           </div>
 
           <div class="main-table__body-cell-amount">
             <span class="base-currency">{{state.baseCurrency}}</span>
             <span
-              class="base-amount">{{calculateAmount(item.costs[1], state.baseExchangeRate) | number : '1.2-2'}}</span>
+              class="base-amount">{{item.costs[1] | amount : (this.state.baseExchangeRate ?? 1) | number : '1.2-2'}}</span>
           </div>
         </span>
         <span class="main-table__body-cell align-center" fxFlex fxLayout="row" fxLayoutAlign="center"
@@ -65,23 +67,27 @@
       <span class="main-table__body-cell align-right">
         <div class="main-table__body-cell-amount">
           <span class="da-currency">{{state.daCurrency}}</span>
-          <span class="da-amount">{{calculateTotal(costItems, CostType.Quoted, state.daExchangeRate) | number : '1.2-2' }}</span>
+          <span
+            class="da-amount">{{costItems | total : CostType.Quoted : (this.state.daExchangeRate ?? 1) | number : '1.2-2' }}</span>
         </div>
 
         <div class="main-table__body-cell-amount">
           <span class="base-currency">{{state.baseCurrency}}</span>
-          <span class="base-amount">{{calculateTotal(costItems, CostType.Quoted, state.baseExchangeRate) | number : '1.2-2' }}</span>
+          <span
+            class="base-amount">{{costItems | total : CostType.Quoted : (this.state.baseExchangeRate ?? 1) | number : '1.2-2' }}</span>
         </div>
       </span>
       <span class="main-table__body-cell align-right">
         <div class="main-table__body-cell-amount">
           <span class="da-currency">{{state.daCurrency}}</span>
-          <span class="da-amount">{{calculateTotal(costItems, CostType.Screened, state.daExchangeRate) | number : '1.2-2' }}</span>
+          <span
+            class="da-amount">{{costItems | total : CostType.Screened : (this.state.daExchangeRate ?? 1) | number : '1.2-2' }}</span>
         </div>
 
         <div class="main-table__body-cell-amount">
           <span class="base-currency">{{state.baseCurrency}}</span>
-          <span class="base-amount">{{calculateTotal(costItems, CostType.Screened, state.baseExchangeRate) | number : '1.2-2' }}</span>
+          <span
+            class="base-amount">{{costItems | total : CostType.Screened : (this.state.baseExchangeRate ?? 1) | number : '1.2-2' }}</span>
         </div>
       </span>
       <span class="main-table__body-cell"></span>

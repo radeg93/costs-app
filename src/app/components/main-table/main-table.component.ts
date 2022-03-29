@@ -34,21 +34,6 @@ export class MainTableComponent implements OnInit {
 		this.exchangeRates = this.costsQuery.getExchangeRates();
 	}
 
-	calculateAmount = (costSubItem: CostSubItem, exchangeRate: any): number => costSubItem.amount * exchangeRate;
-
-	calculateTotal = (costItems: Array<CostItem>, type: CostType, exchangeRate: any): number => {
-		const sum = costItems
-			.map((item) =>
-				item.costs
-					.filter((cost) => cost.type === type)
-					.map((cost) => cost.amount)
-					.reduce((prev, curr) => prev + curr, 0)
-			)
-			.reduce((prev, curr) => prev + curr, 0);
-
-		return sum * exchangeRate;
-	};
-
 	toggleComments = (item: CostItem) => (item.hideComments = !item.hideComments);
 
 	onAddComment = (event: any) => this.costsService.addComment(event.costItemId, event.comment);

@@ -16,9 +16,11 @@ import { MatInputModule } from '@angular/material/input';
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
 import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AmountPipe } from './pipes/amount.pipe';
+import { TotalPipe } from './pipes/total.pipe';
 
 @NgModule({
-	declarations: [AppComponent, CostsComponent, MainTableComponent, CommentsComponent, AddCommentComponent],
+	declarations: [AppComponent, CostsComponent, MainTableComponent, CommentsComponent, AddCommentComponent, AmountPipe, TotalPipe],
 	imports: [
 		BrowserModule,
 		AppRoutingModule,
