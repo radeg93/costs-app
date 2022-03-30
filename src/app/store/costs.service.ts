@@ -3,6 +3,7 @@ import { CostsStore } from '@store/costs.store';
 import { CostsQuery } from '@store/costs.query';
 import { PaymentCurrency } from '@models/exchange-rate.interface';
 import { Comment, Cost } from '@models/costs.interface';
+import { CostType } from '@enums/costs.enum';
 
 @Injectable({
 	providedIn: 'root',

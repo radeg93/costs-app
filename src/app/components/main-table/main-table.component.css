@@ -51,6 +51,12 @@ tr:nth-child(even) {
   cursor: pointer;
 }
 
+.main-table__body-cell-amount {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .main-table__body-cell-amount > span:first-child {
   margin-right: 4px;
   color: #97a2a8;
@@ -78,6 +84,11 @@ tr:nth-child(even) {
 
 .align-center {
   text-align: center;
+}
+
+/deep/.mat-form-field-infix {
+  max-width: 120px;
+  text-align: right;
 }
 
 /*
