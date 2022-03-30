@@ -32,7 +32,7 @@
         <span class="main-table__body-cell align-right">
          <div class="main-table__body-cell-amount" [formGroupName]="i">
             <span class="da-currency">{{state.daCurrency}}</span>
-             <mat-form-field appearance="fill">
+             <mat-form-field appearance="fill" [ngClass]="{'input-error': daAmounts.controls[i].invalid}">
                <input matInput formControlName="amount">
              </mat-form-field>
            <!--            <span-->
@@ -84,7 +84,7 @@
         <div class="main-table__body-cell-amount">
           <span class="da-currency">{{state.daCurrency}}</span>
           <span
-            class="da-amount">{{costItems | total : CostType.Screened : (this.state.daExchangeRate ?? 1) | number : '1.2-2' }}</span>
+            class="da-amount">{{totalScreened | number: '1.2-2'}}</span>
         </div>
 
         <div class="main-table__body-cell-amount">
