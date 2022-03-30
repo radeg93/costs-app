@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { CostItem } from '@models/costs.interface';
+import { Cost, CostItem } from '@models/costs.interface';
 import { CostsQuery } from '@store/costs.query';
-import { debounceTime, distinctUntilChanged, Observable, Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Observable, pairwise, Subject, takeUntil } from 'rxjs';
 import { ExchangeRate } from '@models/exchange-rate.interface';
 import { CommentActionType, CostType } from '@enums/costs.enum';
 import { CostsService } from '@store/costs.service';
@@ -17,22 +17,29 @@ import { DecimalPipe } from '@angular/common';
 export class MainTableComponent implements OnInit, OnDestroy {
 	formGroup: FormGroup;
 
-	@Input() costName: string;
-	@Input() costItems: Array<CostItem>;
+	@Input() set cost(value: Cost) {
+		this.costName = value.name;
+		this.costItems = value.costItems;
+	}
 
 	baseCurrency$: Observable<string>;
 	daCurrency$: Observable<string>;
 	baseExchangeRate$: Observable<number>;
 	daExchangeRate$: Observable<number>;
+
 	exchangeRates: ExchangeRate;
-	totalScreened: number;
+	costName: string;
+	costItems: Array<CostItem>;
+	daTotalScreened: number;
+	baseTotalScreened: number;
 	CostType = CostType;
 	CommentActionType = CommentActionType;
 
+	private readonly numericRegex = '^-?[0-9]\\d*(\\.\\d{1,2})?$';
 	private unsubscribe$: Subject<void> = new Subject<void>();
 
-	get daAmounts(): FormArray {
-		return this.formGroup.get('daAmounts') as FormArray;
+	get daScreenedAmount(): FormArray {
+		return this.formGroup.get('daScreenedAmount') as FormArray;
 	}
 
 	constructor(
@@ -51,64 +58,62 @@ export class MainTableComponent implements OnInit, OnDestroy {
 		this.exchangeRates = this.costsQuery.getExchangeRates();
 
 		this.formGroup = this.formBuilder.group({
-			daAmounts: this.formBuilder.array([]),
+			daScreenedAmount: this.formBuilder.array([]),
 		});
 		this.setFormData();
+		this.trackDaAmountsChanges();
 
-		this.daAmounts.controls.forEach((control: AbstractControl) =>
-			control.valueChanges
-				.pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this.unsubscribe$))
-				.subscribe((changes) => this.trackDaAmountsChanges())
+		this.daScreenedAmount.controls.forEach((control: AbstractControl) =>
+			control.valueChanges.pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this.unsubscribe$)).subscribe((changes) => {
+				if (this.formGroup.valid) {
+					this.trackDaAmountsChanges();
+					control.patchValue({ baseAmount: this.calculateBaseAmount(control) }, { emitEvent: false, onlySelf: true });
+					this.changeDetectorRef.detectChanges();
+				}
+			})
 		);
 
-		this.daExchangeRate$
-			.pipe(takeUntil(this.unsubscribe$))
-			.subscribe((exchangeRate: number) => this.trackDaExchangeRateChanges(exchangeRate));
+		this.daExchangeRate$.pipe(takeUntil(this.unsubscribe$), pairwise()).subscribe(([previous, current]) => {
+			this.trackDaExchangeRateChanges(previous, current);
+			this.changeDetectorRef.detectChanges();
+		});
 	}
 
-	setFormData() {
-		const numericRegex = '^-?[0-9]\\d*(\\.\\d{1,2})?$';
-		const daAmounts = this.formGroup.get('daAmounts') as FormArray;
+	setFormData = () => {
 		this.costItems.forEach((costItem: CostItem) => {
 			const amount = costItem.costs[1].amount * this.costsQuery.getDaExchangeRate();
-			daAmounts.push(
+			const baseAmount = costItem.costs[1].amount * this.costsQuery.getBaseExchangeRate();
+			this.daScreenedAmount.push(
 				this.formBuilder.group({
-					amount: [amount, [Validators.required, Validators.pattern(numericRegex)]],
+					amount: [amount, [Validators.required, Validators.pattern(this.numericRegex)]],
+					baseAmount: [baseAmount, Validators.required],
 				})
 			);
 		});
-	}
+	};
 
-	trackDaAmountsChanges() {
-		if (this.formGroup.valid) {
-			this.totalScreened = this.daAmounts.value
-				.map((item: any) => JSON.parse(item.amount))
-				.reduce((prev: number, curr: number) => prev + curr, 0);
-			this.changeDetectorRef.detectChanges();
-		}
-	}
+	trackDaAmountsChanges = () => {
+		this.daTotalScreened = this.daScreenedAmount.value
+			.map((item: any) => JSON.parse(item.amount))
+			.reduce((prev: number, curr: number) => prev + curr, 0);
 
-	trackDaExchangeRateChanges(exchangeRate: number) {
-		this.costItems.forEach((costItem: CostItem, index) => {
-			const amount = costItem.costs[1].amount * exchangeRate;
-			this.daAmounts.controls[index].patchValue({ amount: parseFloat(amount.toString()).toFixed(2) });
+		this.baseTotalScreened = this.daTotalScreened / this.costsQuery.getBaseToDaExchangeRates();
+	};
+
+	trackDaExchangeRateChanges = (previousExchangeRate: number, currentExchangeRate: number) => {
+		this.daScreenedAmount.controls.forEach((group) => {
+			const newAmount = group.value.amount * (currentExchangeRate / previousExchangeRate);
+			const newBaseAmount = newAmount / this.costsQuery.getBaseToDaExchangeRates();
+			group.patchValue({
+				amount: parseFloat(newAmount.toString()).toFixed(2),
+				baseAmount: parseFloat(newBaseAmount.toString()).toFixed(2),
+			});
 		});
-		this.calculateTotalScreened(exchangeRate);
-	}
+	};
 
-	calculateTotalScreened = (exchangeRate?: number) => {
-		const daExchangeRate = exchangeRate ?? this.costsQuery.getDaExchangeRate();
-		const totalScreened = this.costItems
-			.map((item) =>
-				item.costs
-					.filter((cost) => cost.type === CostType.Screened)
-					.map((cost) => cost.amount)
-					.reduce((prev, curr) => prev + curr, 0)
-			)
-			.reduce((prev, curr) => prev + curr, 0);
-
-		this.totalScreened = totalScreened * daExchangeRate;
-		this.changeDetectorRef.detectChanges();
+	calculateBaseAmount = (control: AbstractControl) => {
+		const newBaseAmount = control.value.amount / this.costsQuery.getBaseToDaExchangeRates();
+		return parseFloat(newBaseAmount.toString()).toFixed(2);
 	};
 
 	toggleComments = (item: CostItem) => (item.hideComments = !item.hideComments);

@@ -18,5 +18,5 @@
 </ng-container>
 
 <ng-container *ngFor="let cost of costs$ | async">
-  <app-main-table [costName]="cost.name" [costItems]="cost.costItems"></app-main-table>
+  <app-main-table [cost]="cost"></app-main-table>
 </ng-container>

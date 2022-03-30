@@ -12,7 +12,7 @@
       <span class="main-table__header-cell align-right">Screened</span>
       <span class="main-table__header-cell"></span>
     </div>
-    <ng-container *ngFor="let item of costItems; let i = index;" formArrayName="daAmounts">
+    <ng-container *ngFor="let item of costItems; let i = index;" formArrayName="daScreenedAmount">
       <div class="main-table__body">
         <span class="main-table__body-cell">{{item.name}}</span>
         <span class="main-table__body-cell">{{item.costItemAlias.accountingCode}}</span>
@@ -32,17 +32,14 @@
         <span class="main-table__body-cell align-right">
          <div class="main-table__body-cell-amount" [formGroupName]="i">
             <span class="da-currency">{{state.daCurrency}}</span>
-             <mat-form-field appearance="fill" [ngClass]="{'input-error': daAmounts.controls[i].invalid}">
+             <mat-form-field appearance="fill" [ngClass]="{'input-error': daScreenedAmount.controls[i].invalid}">
                <input matInput formControlName="amount">
              </mat-form-field>
-           <!--            <span-->
-           <!--              class="da-amount">{{item.costs[1] | amount : (this.state.daExchangeRate ?? 1) | number : '1.2-2'}}</span>-->
           </div>
 
           <div class="main-table__body-cell-amount">
             <span class="base-currency">{{state.baseCurrency}}</span>
-            <span
-              class="base-amount">{{item.costs[1] | amount : (this.state.baseExchangeRate ?? 1) | number : '1.2-2'}}</span>
+            <span class="base-amount">{{daScreenedAmount.controls[i].value.baseAmount | number : '1.2-2'}}</span>
           </div>
         </span>
         <span class="main-table__body-cell align-center" fxFlex fxLayout="row" fxLayoutAlign="center"
@@ -84,13 +81,13 @@
         <div class="main-table__body-cell-amount">
           <span class="da-currency">{{state.daCurrency}}</span>
           <span
-            class="da-amount">{{totalScreened | number: '1.2-2'}}</span>
+            class="da-amount">{{ daTotalScreened | number: '1.2-2' }}</span>
         </div>
 
         <div class="main-table__body-cell-amount">
           <span class="base-currency">{{state.baseCurrency}}</span>
           <span
-            class="base-amount">{{costItems | total : CostType.Screened : (this.state.baseExchangeRate ?? 1) | number : '1.2-2' }}</span>
+            class="base-amount">{{ baseTotalScreened | number: '1.2-2' }}</span>
         </div>
       </span>
       <span class="main-table__body-cell"></span>
