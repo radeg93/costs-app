@@ -64,7 +64,7 @@ export class MainTableComponent implements OnInit, OnDestroy {
 		this.trackDaAmountsChanges();
 
 		this.daScreenedAmount.controls.forEach((control: AbstractControl) =>
-			control.valueChanges.pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this.unsubscribe$)).subscribe((changes) => {
+			control.valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unsubscribe$)).subscribe((changes) => {
 				if (this.formGroup.valid) {
 					this.trackDaAmountsChanges();
 					control.patchValue({ baseAmount: this.calculateBaseAmount(control) }, { emitEvent: false, onlySelf: true });
