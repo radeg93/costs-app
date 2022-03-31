@@ -31,7 +31,6 @@ export interface CostItem {
 	};
 	costs: Array<CostSubItem>;
 	comments: Array<Comment>;
-	hideComments?: boolean;
 }
 
 export interface CostSubItem {

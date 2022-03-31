@@ -7,6 +7,7 @@ import { CommentActionType, CostType } from '@enums/costs.enum';
 import { CostsService } from '@store/costs.service';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { CostItemPresentational } from '@models/presentational.interface';
 
 @Component({
 	selector: 'app-main-table',
@@ -19,7 +20,7 @@ export class MainTableComponent implements OnInit, OnDestroy {
 
 	@Input() set cost(value: Cost) {
 		this.costName = value.name;
-		this.costItems = value.costItems;
+		this.costItems = value.costItems.map((item) => ({ ...item, hideComments: false }));
 	}
 
 	baseCurrency$: Observable<string>;
@@ -29,7 +30,7 @@ export class MainTableComponent implements OnInit, OnDestroy {
 
 	exchangeRates: ExchangeRate;
 	costName: string;
-	costItems: Array<CostItem>;
+	costItems: Array<CostItemPresentational>;
 	daTotalScreened: number;
 	baseTotalScreened: number;
 	CostType = CostType;
@@ -116,7 +117,7 @@ export class MainTableComponent implements OnInit, OnDestroy {
 		return parseFloat(newBaseAmount.toString()).toFixed(2);
 	};
 
-	toggleComments = (item: CostItem) => (item.hideComments = !item.hideComments);
+	toggleComments = (item: CostItemPresentational) => (item.hideComments = !item.hideComments);
 
 	onAddComment = (event: any) => this.costsService.addComment(event.costItemId, event.comment);
 
